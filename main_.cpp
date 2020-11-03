@@ -47,7 +47,7 @@ int get_input(char* line)
     }
     if (count != 1) //strlen(line) != 0
     {
-        line[count-1] = 0;        //add NULL
+        line[count - 1] = 0;        //add NULL
         /* neu history khac rong thi free, sau do copy lenh vao history */
         if (history != nullptr)
             free(history);
@@ -64,7 +64,7 @@ void exec_args(char** parsed)
 { 
     int should_wait = 1;
     //check if parent process should wait or not
-    for(int i=0; i<MAX_LIST; ++i)
+    for (int i = 0; i < MAX_LIST; ++i)
     {
         if (parsed[i] == NULL)
             break;
@@ -111,7 +111,7 @@ void parse_space(char* str, char** parsed)
 {
     int i;
 
-    for (i=0; i<MAX_LIST; ++i)
+    for (i = 0; i < MAX_LIST; ++i)
     {
         parsed[i] = strsep(&str, " ");
         if (parsed[i] == NULL)          //done parsing
@@ -123,10 +123,8 @@ void parse_space(char* str, char** parsed)
 
 
 /* ham chuyen huong output */
-void output_redirect(char** command, char**fileName)
+void output_redirect(char** command, char** fileName)
 {
-    bool found_amp = is_ampersand(fileName);
-
     // Forking a child
     pid_t pid = fork();
 
@@ -138,7 +136,7 @@ void output_redirect(char** command, char**fileName)
 
     if (pid == 0)
     {
-        int fd = open(fileName[0], O_CREAT | O_WRONLY , 0666);
+        int fd = open(fileName, O_CREAT | O_WRONLY , 0666);
 
         if (fd < 0)
         {
@@ -158,8 +156,7 @@ void output_redirect(char** command, char**fileName)
         exit(0);   
     }
 
-    if (!found_amp)
-        waitpid(pid, NULL, 0);
+    waitpid(pid, NULL, 0);
    
 }
 
@@ -167,8 +164,6 @@ void output_redirect(char** command, char**fileName)
 /* ham chuyen huong input */
 void input_redirect(char** command, char** fileName)
 {
-    bool found_amp = is_ampersand(fileName);
-
     // Forking a child
     pid_t pid = fork();
 
@@ -200,16 +195,13 @@ void input_redirect(char** command, char** fileName)
         exit(EXIT_FAILURE);
     }
 
-    if (!found_amp)
-    {
-        waitpid(pid, NULL, 0);
-    }  
+    waitpid(pid, NULL, 0);
+ 
 }
 
 //thuc thi pipe
 void execPipe(char** argv1, char** argv2)
 {
-    bool found_amp = is_ampersand(argv2);
     int p[2];
     pid_t p1, p2;
     if (pipe(p) < 0)
@@ -260,11 +252,8 @@ void execPipe(char** argv1, char** argv2)
     close(p[1]);
     close(p[0]);
     
-    if (!found_amp)
-    {
-        waitpid(p1, NULL, 0);
-        waitpid(p2, NULL, 0);      
-    }         
+    waitpid(p1, NULL, 0);
+    waitpid(p2, NULL, 0);             
 }
 
 

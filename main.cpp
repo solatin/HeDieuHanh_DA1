@@ -23,44 +23,6 @@ void type_prompt()
     fflush(stdout);
 }
 
-void read_command(char cmd[], char *par[])
-{
-    /*
-        Doc input ban phim va tach thanh command vs parameters
-    */
-
-    //clear
-    memset(cmd, 0, MAX_LENGTH);
-    for(int i=0; i<MAX_LENGTH/2;++i)
-        memset(par[i], 0, MAX_LENGTH);
-    
-
-    char line[MAX_LENGTH];
-    char *args[MAX_LENGTH/2+1], *pch;  //args: argument
-    int count = 0, i=0;
-    
-    //Read one line
-    for(;;){
-        int c=fgetc(stdin);
-        line[count++] = (char)c;
-        if(c=='\n') break;
-    }
-    if(count==1) return;
-    pch = strtok(line, " \n");
-
-    //parse the line into words
-    while(pch!=NULL){
-        args[i++] = strdup(pch);
-        pch = strtok(NULL, " \n");
-    }
-    //first word is the command
-    strcpy(cmd, args[0]);
-
-    //others are parameters;
-    for (int j=0; j<i; j++)
-        par[j] = args[j];
-    par[i] = NULL; //NULL-terminate the parameter list
-}
 
 int get_input(char* line)
 {

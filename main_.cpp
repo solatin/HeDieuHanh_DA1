@@ -114,11 +114,9 @@ char** parse_pipe(char* line)
     int pos = 0;
 
     pipe = strtok(line, pipeRedirect);
-    delete_white_space_or_character(pipe);
     pipeArr[0] = pipe;
 
     pipe = strtok(nullptr, "\n");
-    delete_white_space_or_character(pipe);
     pipeArr[1] = pipe;
     
     pipeArr[2] = nullptr;
@@ -168,7 +166,7 @@ char** parse_space(char* line)
 
 
 /* ham chuyen huong output */
-void output_redirect(char** command, char* fileName)
+void output_redirect(char** command, char** fileName)
 {
     // Forking a child
     pid_t pid = fork();
@@ -181,7 +179,7 @@ void output_redirect(char** command, char* fileName)
 
     if (pid == 0)
     {
-        int fd = open(fileName, O_CREAT | O_WRONLY , 0666);
+        int fd = open(fileName[0], O_CREAT | O_WRONLY , 0666);
 
         if (fd < 0)
         {
@@ -207,7 +205,7 @@ void output_redirect(char** command, char* fileName)
 
 
 /* ham chuyen huong input */
-void input_redirect(char** command, char* fileName)
+void input_redirect(char** command, char** fileName)
 {
     // Forking a child
     pid_t pid = fork();
@@ -220,7 +218,7 @@ void input_redirect(char** command, char* fileName)
 
     if (pid == 0)
     {
-        int fd = open(fileName, O_RDONLY, 0666);
+        int fd = open(fileName[0], O_RDONLY, 0666);
 
         if (fd < 0)
         {
@@ -346,8 +344,7 @@ int main(void)
     {       
         type_prompt();      //display prompt on screen
         if (get_input(line)) //read input from terminal
-            continue;  
-        parse_space(line, parsedArgs);    //execute command
+            continue;
         type = checkType(line);
         // Neu cau lenh la Pipe hay Redirect thi argv1 luu token o ben trai cac dau '|', '<', '>'; argv2 luu token o ben phai cac dau do
         if (type != isSimpleCommand)
@@ -396,7 +393,7 @@ int main(void)
         }
         else
         {
-            execArgv(argv1);        
+            exec_argv(argv1);        
         }
         
     }

@@ -126,7 +126,7 @@ void parse_space(char* str, char** parsed)
 
 
 /* ham chuyen huong output */
-void output_redirect(char** command, char** fileName)
+void output_redirect(char* command, char* fileName)
 {
     // Forking a child
     pid_t pid = fork();
@@ -165,7 +165,7 @@ void output_redirect(char** command, char** fileName)
 
 
 /* ham chuyen huong input */
-void input_redirect(char** command, char** fileName)
+void input_redirect(char* command, char* fileName)
 {
     // Forking a child
     pid_t pid = fork();
@@ -203,7 +203,7 @@ void input_redirect(char** command, char** fileName)
 }
 
 //thuc thi pipe
-void execPipe(char** argv1, char** argv2)
+void exec_Pipe(char* argv1, char* argv2)
 {
     int p[2];
     pid_t p1, p2;
@@ -297,7 +297,8 @@ int main(void)
     char line[MAX_LENGTH];
     char* parsedArgs[MAX_LIST];
     int type, status;
-    char* argv1, argv2;
+    char* argv1
+    char* argv2;
 
     while (true)
     {       
@@ -347,12 +348,12 @@ int main(void)
         }
         else if (type == isPipe)
         {
-            execPipe(argv1, argv2); 
+            exec_Pipe(argv1, argv2); 
             usleep(20);
         }
         else
         {
-            execArgv(argv1);        
+            exec_Argv(argv1);        
         }
         
     }

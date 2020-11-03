@@ -4,6 +4,9 @@
 #include<unistd.h> 
 #include<sys/types.h> 
 #include<sys/wait.h> 
+#include<sys/stat.h>
+#include<fcntl.h>
+#include<time.h>
 //#include<readline/readline.h> 
 //#include<readline/history.h> 
 
@@ -175,7 +178,7 @@ void input_redirect(char** command, char** fileName)
 
     if (pid == 0)
     {
-        int fd = open(fileName[0], O_RDONLY, 0666);
+        int fd = open(fileName, O_RDONLY, 0666);
 
         if (fd < 0)
         {
@@ -293,7 +296,8 @@ int main(void)
 {
     char line[MAX_LENGTH];
     char* parsedArgs[MAX_LIST];
-    int type;
+    int type, status;
+    char* argv1, argv2;
 
     while (true)
     {       

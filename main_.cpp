@@ -104,29 +104,71 @@ void exec_args(char** parsed)
     } 
 }
 
-int parse_pipe(char* line, char** parsed)
+/* Ham tach cau lenh ra 2 ve, ben trai va phai cua |<> */
+#define pipeRedirect "|<>"
+char** parse_pipe(char* line)
 {
-    return 0;
+    int bufSize = 2;
+    char* pipe;
+    char** pipeArr = (char**)malloc(bufSize*sizeof(char*)+1);
+    int pos = 0;
+
+    pipe = strtok(line, pipeRedirect);
+    delete_white_space_or_character(pipe);
+    pipeArr[0] = pipe;
+
+    pipe = strtok(nullptr, "\n");
+    delete_white_space_or_character(pipe);
+    pipeArr[1] = pipe;
+    
+    pipeArr[2] = nullptr;
+    return pipeArr;
 }
 
 /*Parse command words*/
-void parse_space(char* str, char** parsed)
+#define TOKEN_BUFSIZE 64
+#define DELIM " \t\r\n\a"
+char** parse_space(char* line)
 {
-    int i;
+    int bufSize = TOKEN_BUFSIZE;
+    int pos = 0;
+    char* token;
+    char** tokenArr = (char**)malloc( sizeof(char*)*bufSize);
 
-    for (i = 0; i < MAX_LIST; ++i)
+    if (!tokenArr)
     {
-        parsed[i] = strsep(&str, " ");
-        if (parsed[i] == NULL)          //done parsing
-            break;
-        if (strlen(parsed[i]) == 0)   //ignore space
-            i--;
+        printf("\nAlloction error..");
+        exit(EXIT_FAILURE);
     }
+    
+    token = strtok(line, DELIM);
+  
+    while(token != NULL)
+    {
+        tokenArr[pos] = token;
+        pos++;
+
+        if (pos >= bufSize)
+        {
+            bufSize += TOKEN_BUFSIZE;
+            tokenArr = (char**) realloc(tokenArr, bufSize*sizeof(char*));
+            if (!tokenArr)
+            {
+                printf("\nAllocation error..");
+                exit(EXIT_FAILURE);
+            }
+        }
+        token = strtok(NULL, DELIM);
+
+    }
+    tokenArr[pos] = nullptr;
+    
+    return tokenArr;
 }
 
 
 /* ham chuyen huong output */
-void output_redirect(char* command, char* fileName)
+void output_redirect(char** command, char* fileName)
 {
     // Forking a child
     pid_t pid = fork();
@@ -165,7 +207,7 @@ void output_redirect(char* command, char* fileName)
 
 
 /* ham chuyen huong input */
-void input_redirect(char* command, char* fileName)
+void input_redirect(char** command, char* fileName)
 {
     // Forking a child
     pid_t pid = fork();
@@ -203,7 +245,7 @@ void input_redirect(char* command, char* fileName)
 }
 
 //thuc thi pipe
-void exec_Pipe(char* argv1, char* argv2)
+void execPipe(char** argv1, char** argv2)
 {
     int p[2];
     pid_t p1, p2;
@@ -295,10 +337,10 @@ int checkType(char* inputLine)
 int main(void)
 {
     char line[MAX_LENGTH];
-    char* parsedArgs[MAX_LIST];
     int type, status;
-    char* argv1
-    char* argv2;
+    char** argv1;
+    char** argv2;
+    char** tmp = nullptr;
 
     while (true)
     {       
@@ -309,13 +351,14 @@ int main(void)
         type = checkType(line);
         // Neu cau lenh la Pipe hay Redirect thi argv1 luu token o ben trai cac dau '|', '<', '>'; argv2 luu token o ben phai cac dau do
         if (type != isSimpleCommand)
-        {     
-            argv1 = parsedArgs[0];
-            argv2 = parsedArgs[2];
+        {
+            tmp = parse_pipe(line);
+            argv1 = parse_space(tmp[0]);
+            argv2 = parse_space(tmp[1]);
         }
         else // Neu cau lenh binh thuong thi luu token vao argv1, argv2 bang null
         {
-            argv1 = parsedArgs[0];  
+            argv1 = parse_space(line);
             argv2 = nullptr;
         }
         if (strcmp(line, "exit") == 0)  // neu nhap exit
@@ -348,12 +391,12 @@ int main(void)
         }
         else if (type == isPipe)
         {
-            exec_Pipe(argv1, argv2); 
+            execPipe(argv1, argv2); 
             usleep(20);
         }
         else
         {
-            exec_Argv(argv1);        
+            execArgv(argv1);        
         }
         
     }

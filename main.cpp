@@ -11,6 +11,7 @@ using namespace std;
 #define MAX_LENGTH 80
 #define MAX_LIST 5
 
+/*Printf "shh>" to the screen*/
 void type_prompt()
 {
     static int first_time = 1;
@@ -23,7 +24,7 @@ void type_prompt()
     fflush(stdout);
 }
 
-
+/*Read input from screen*/
 int get_input(char* line)
 {
     int count = 0;
@@ -47,14 +48,13 @@ int get_input(char* line)
 void exec_args(char** parsed) 
 { 
     int should_wait = 1;
-    //check if whether parent process should wait or not
+    //check if parent process should wait or not
     for(int i=0; i<MAX_LIST; ++i){
         if(parsed[i] == NULL)
             break;
         if (strcmp(parsed[i], "&") == 0){
             should_wait = 0;
-            
-            memset(parsed[i], 0, 4);   //delete "&" from parsed
+            parsed[i] = NULL; //delete "&" from parsed
         }
         
     }
@@ -73,7 +73,6 @@ void exec_args(char** parsed)
     }
     else if (pid>0) {                 //parent process
         if(should_wait){
-            printf("Waiting...\n");
             wait(NULL); 
         }
         return; 
@@ -85,6 +84,7 @@ int parse_pipe(char* line, char** parsed)
     return 0;
 }
 
+/*Parse command words*/
 void parse_space(char* str, char** parsed)
 {
     int i;
@@ -93,7 +93,7 @@ void parse_space(char* str, char** parsed)
         parsed[i] = strsep(&str, " ");
         if(parsed[i] == NULL)          //done parsing
             break;
-        if(strlen(parsed[i]) == 0)   //space at begin of string
+        if(strlen(parsed[i]) == 0)   //ignore space
             i--;
     }
 }
@@ -101,9 +101,9 @@ int main(void){
     char line[MAX_LENGTH];
     char* parsedArgs[MAX_LIST];
     while(true){       
-        type_prompt();   //display prompt on screen
-        if(get_input(line))
-            continue;  //read input from terminal
+        type_prompt();      //display prompt on screen
+        if(get_input(line)) //read input from terminal
+            continue;  
         parse_space(line, parsedArgs);    //execute command
         exec_args(parsedArgs);
         

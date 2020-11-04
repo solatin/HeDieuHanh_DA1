@@ -41,6 +41,7 @@ int get_input(char* line)
         return 0;
     }
     
+    //strlen(line) = 0, user did not enter anything
     return 1;
 }
 
@@ -67,12 +68,13 @@ void exec_args(char** parsed)
     } 
     else if (pid == 0) {        //child process
         if(execvp(parsed[0], parsed) < 0){
-            printf("\n Could not execute command..");
+            printf("\n Could not execute command..\n");
         }
         exit(0);
     }
     else if (pid>0) {                 //parent process
         if(should_wait){
+            printf("waiting...\n");
             wait(NULL); 
         }
         return; 
@@ -103,7 +105,7 @@ int main(void){
     while(true){       
         type_prompt();      //display prompt on screen
         if(get_input(line)) //read input from terminal
-            continue;  
+            continue;         //if user did not enter anything, continue
         parse_space(line, parsedArgs);    //execute command
         exec_args(parsedArgs);
         

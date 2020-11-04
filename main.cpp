@@ -25,26 +25,43 @@ void type_prompt()
 }
 
 /*Read input from screen*/
-int get_input(char* line)
+int get_input(char* line, char* history)
 {
     int count = 0;
     
     //Read one line
-    while(true){
-        int c=fgetc(stdin);
+    while (true)
+    {
+        int c = fgetc(stdin);
         line[count++] = (char)c;
-        if(c=='\n') break;
+        if (c=='\n')
+            break;
     }
-    if (count!=1) {     //strlen(line) != 0
-        line[count-1] = 0;        //add NULL
-        //add_history(line);
+    if (count != 1) //strlen(line) != 0
+    {
+        line[count - 1] = '\0';        //add NULL
+        if (strcmp(line, "!!") == 0)    // neu nhap !! de truy cap lich su
+        {
+            if (strcmp(history, "")==0) // neu khong co lenh gan day trong lich su
+            {
+                printf("No command in history..\n");
+                return 1;
+            }
+            else
+            {      
+                strcpy(line, history);
+                printf("ssh>%s\n",line);
+                return 0;
+            }
+        }
+        strcpy(history, line);
         return 0;
     }
     
     //strlen(line) = 0, user did not enter anything
+
     return 1;
 }
-
 /* Execute system command*/
 void exec_args(char** parsed) 
 { 
@@ -101,11 +118,13 @@ void parse_space(char* str, char** parsed)
 }
 int main(void){
     char line[MAX_LENGTH];
+    char history[MAX_LENGTH] = "";
     char* parsedArgs[MAX_LIST];
     while(true){       
         type_prompt();      //display prompt on screen
-        if(get_input(line)) //read input from terminal
-            continue;         //if user did not enter anything, continue
+
+        if(get_input(line, history)) //read input from terminal
+            continue;  
         parse_space(line, parsedArgs);    //execute command
         exec_args(parsedArgs);
         

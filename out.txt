@@ -1,6 +1,0 @@
-ls.txt
-main
-main.cpp
-out.txt
-README.md
-sol.txt

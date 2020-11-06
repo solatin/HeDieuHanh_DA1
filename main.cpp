@@ -329,7 +329,7 @@ int main(void){
         if(execFlag==0)
             continue;
         if(execFlag == 1){
-            if(exec_owncmd(parsedArgs))
+            if(exec_owncmd(parsedArgs))         //cd or exit command
                 continue;
             exec_args(parsedArgs, parsedRedirArgs);
         }
